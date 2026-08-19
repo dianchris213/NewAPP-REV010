@@ -1,58 +1,56 @@
-# Transaction Hub
+# Catatan Keuangan — Mini App
 
-Tolong baca dan teruskan aplikasi dari repository GitHub ini:
+A mobile-first personal finance mini app built with TanStack Start, React, TypeScript, and Tailwind CSS. All data is kept locally (localStorage), so the app runs without a backend.
 
-https://github.com/dianchris213/NewAPP-REV006
+## Features
 
-[CREDIT SAVING MODE: RESTRICTED SCOPE]
+### Transactions
+- **Add Transaction bottom sheet** (`src/components/AddTransactionSheet.tsx`)
+  - Income / expense switch with per-type categories
+  - Strict validation: amount > 0 (max 1,000,000,000,000), category, date, short note (max 80 chars)
+  - **Account selection**: every transaction is saved to a specific wallet account and adjusts that account's balance (expenses are blocked when the account balance is insufficient)
+  - Optimistic insert with a pending state, focus trap and `Esc` to close
+- **All Transactions bottom sheet** (`src/components/AllTransactionsSheet.tsx`)
+  - Filters by month, week, type, category, and keyword search
+  - Reset filters, plus a "current month" shortcut from the bottom navigation
+- **Transaction list** (`src/components/TransactionList.tsx`) with inline edit and delete
 
+### Wallet (`/wallet`)
+- Combined balance across all accounts
+- Account types: Cash, Bank, and E-Wallet with a provider sub-menu (BCA, Mandiri, GoPay, OVO, …)
+- **Add account** bottom sheet with validated name (2–30 chars) and starting balance
+- **Top Up** bottom sheet: add funds to any account with an optional funding source
+- **Transfer** bottom sheet: move money between accounts with balance checks
+- **Wallet activity feed** filterable by Top Up / Transfer / All
 
+### Settings (`/settings`)
+- **Language toggle (ID / EN)** backed by the global store; the whole settings screen is translated
+- **Push notifications** toggle
+- **App Lock / Biometric** toggle placeholder with explicit on/off states and a preview note
+- Dark/light theme and cloud sync toggles
+- **Local file avatar upload** from the profile sheet in the top bar (image is read locally as a data URL — nothing is uploaded to a server)
+- Sign out and destructive account actions
 
+### Other
+- Analytics overview (`/analytics`)
+- Telegram / Google style mock login (`/login`, `/signup`)
+- Accessible bottom sheets: `role="dialog"`, `aria-modal`, focus trap, `Esc` to close, and body-level portals so sheets always sit above the bottom navigation
 
-RULES FOR AI:
+## State
 
-1. DO NOT scan or read the entire repository. (Leave the background files untouched).
-
-2. DO NOT search for unused components.
-
-3. READ AND EDIT ONLY THESE FILES: 
-
-   - src/routes/..
-
-   - README.md
-
-   - if it needs editing, feel free to edit
-
-
-
-4. Do not generate long explanations. Just output the updated code.
-
-
-
-
-MY REQUEST:
-
-The previous generation stopped partway and broke the build. Please complete these exact remaining tasks: 1. FIX IMPORTS & TYPING in `src/components/AppShell.tsx`: - Fix AppShell.tsx by importing `useState` and adding the missing React hook imports so it compiles cleanly. (Change the React import to: `import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";`). - Import and use `FullScreenModal` in AppShell.tsx (or replace it with the correct existing modal component) so the build errors are resolved. - Add an explicit type for the `setNotifOpen` functional update parameter (`v: boolean`) to remove the implicit `any` TypeScript error. 2. FINISH SEARCH & A11Y in `src/components/AllTransactionsSheet.tsx`: - Update the search filter logic so the haystack includes the transaction `amount` (nominal), not just the title/note. - Add the required `data-testid` attributes to their respective elements: `tx-search-input`, `tx-filter-toggle`, `tx-reset-button`, and `tx-close-button`. - Implement focus management: Move keyboard focus to the keyword search input when the transactions modal opens to improve accessibility and usability (use a `useRef` and `useEffect`). 
-
-Please audit and verify the following 4 automated/manual user flows to ensure complete stability and seamless UX: 1. ALL TRANSACTIONS SEARCH & FOCUS TEST: - Ensure that when the "Lihat Semua" (All Transactions) modal opens, keyboard focus is strictly and immediately directed to the search input (`tx-search-input`). - Verify that typing keywords or numeric amounts into the search box instantly filters the transaction list in real time without lag. 2. ADD TRANSACTION & SYNC FLOW TEST: - Open the "Tambah Transaksi" (Add Transaction) modal, fill in the amount, category, and date, then submit. - Ensure the newly added transaction is successfully appended to the global store and instantly visible inside the "Semua Transaksi" modal without requiring a page refresh. 3. TELEGRAM LOGIN & APP SHELL INTEGRATION TEST: - In `AppShell.tsx` and `TopBar`, ensure the Telegram WebApp SDK data (`window.Telegram?.WebApp?.initDataUnsafe?.user`) is safely read via optional chaining (`?.`). - Verify that it correctly auto-fills the user's name, handle, and avatar (with fallback to store mock data), and successfully renders the Home page (`/`) without breaking. 4. MULTI-TRANSACTION SEARCH & AMOUNT FILTER TEST: - Open the transaction modal, add multiple test transactions with distinct numeric amounts and different text notes. - Test searching by both text strings and specific numeric digits (e.g., searching "50000" or specific category names) to ensure the search haystack matches accurately.
-
-This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/db076e38-c747-4804-bafe-de33076a4ebf).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+`src/lib/app-store.tsx` holds a single React context store with user, transactions, wallets, wallet activity, settings, language, and transaction filters. Everything is persisted to `localStorage` (`tmab-state-v1`) with debounced writes.
 
 ## Development
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Built with
+
+- TanStack Start (TanStack Router)
+- TypeScript
+- React
+- Tailwind CSS
+- sonner (toasts)
